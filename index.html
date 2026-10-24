@@ -45,7 +45,15 @@
     }
     #yarn-track {
       position: relative;
-      height: 76px;
+      height: 80px;
+    }
+    #title {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      white-space: nowrap;
+      transform-origin: left center;
+      transform: translateY(-50%);
     }
     #thread {
       position: absolute;
@@ -167,8 +175,8 @@
 </head>
 <body>
   <header id="page-header">
-    <h1>Which cat is sick?</h1>
     <div id="yarn-track">
+      <h1 id="title">Which cat is sick?</h1>
       <div id="thread"></div>
       <div id="yarn">
         <svg viewBox="0 0 100 100">
@@ -223,6 +231,7 @@
     const yarnEl = document.getElementById('yarn');
     const yarnSvg = yarnEl.querySelector('svg');
     const threadEl = document.getElementById('thread');
+    const titleEl = document.getElementById('title');
     const start = performance.now();
     let frameId;
 
@@ -237,6 +246,11 @@
       threadEl.style.marginTop = (size / 2 - 4) + 'px';
       const rolled = travel * progress / (MAX_SIZE / 2);
       yarnSvg.style.transform = 'rotate(' + (-rolled * 180 / Math.PI) + 'deg)';
+
+      // Once the ball reaches the title it squashes it against the left edge.
+      const squash = Math.max(0, Math.min(1, (left - 6) / titleEl.offsetWidth));
+      const stretch = 1 + (1 - squash) * 0.35;
+      titleEl.style.transform = 'translateY(-50%) scale(' + squash + ', ' + stretch + ')';
     }
 
     function tick(now) {
