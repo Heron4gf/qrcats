@@ -35,27 +35,48 @@
     }
     header {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      flex-direction: column;
+      gap: 8px;
     }
     h1 {
       font-size: 1.6rem;
       font-weight: 900;
       line-height: 1.1;
     }
-    #timer {
-      flex-shrink: 0;
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #ffffff;
+    #yarn-track {
+      position: relative;
+      height: 76px;
+    }
+    #thread {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      height: 4px;
+      margin-top: 22px;
+      border-radius: 2px;
+      background: var(--red);
+    }
+    #yarn {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.6rem;
+    }
+    #yarn svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #timer {
+      position: relative;
+      color: #ffffff;
+      font-size: 1.5rem;
       font-weight: 900;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
     }
     #answers {
       flex: 1;
@@ -91,12 +112,15 @@
       fill: #ffffff;
     }
     .answer img {
-      width: 72px;
-      height: 72px;
-      margin-left: auto;
+      align-self: stretch;
+      height: auto;
+      width: auto;
+      aspect-ratio: 1 / 1;
+      max-width: 50%;
+      margin: 14px -10px 20px auto;
       flex-shrink: 0;
       border-radius: 8px;
-      border: 3px solid #ffffff;
+      border: 4px solid #ffffff;
       object-fit: cover;
     }
     .red { background: var(--red); }
@@ -144,7 +168,25 @@
 <body>
   <header id="page-header">
     <h1>Which cat is sick?</h1>
-    <div id="timer">60</div>
+    <div id="yarn-track">
+      <div id="thread"></div>
+      <div id="yarn">
+        <svg viewBox="0 0 100 100">
+          <defs><clipPath id="ball"><circle cx="50" cy="50" r="48"/></clipPath></defs>
+          <circle cx="50" cy="50" r="48" fill="#e21b3c"/>
+          <g clip-path="url(#ball)" fill="none" stroke="#a3112a" stroke-width="4">
+            <path d="M-5 30 C30 10 70 10 105 30"/>
+            <path d="M-5 48 C30 28 70 28 105 48"/>
+            <path d="M-5 66 C30 46 70 46 105 66"/>
+            <path d="M25 -5 C5 30 5 70 25 105"/>
+            <path d="M45 -5 C25 30 25 70 45 105"/>
+            <path d="M75 -5 C95 30 95 70 75 105"/>
+          </g>
+          <circle cx="50" cy="50" r="47" fill="none" stroke="#a3112a" stroke-width="3"/>
+        </svg>
+        <span id="timer">60</span>
+      </div>
+    </div>
   </header>
 
   <div id="answers">
@@ -172,25 +214,46 @@
   </div>
 
   <script>
-    let timeLeft = 60;
+    const DURATION = 60;
+    const MAX_SIZE = 72;
+    const MIN_SIZE = 44;
     const timerEl = document.getElementById('timer');
     const answersEl = document.getElementById('answers');
+    const trackEl = document.getElementById('yarn-track');
+    const yarnEl = document.getElementById('yarn');
+    const yarnSvg = yarnEl.querySelector('svg');
+    const threadEl = document.getElementById('thread');
+    const start = performance.now();
+    let frameId;
 
-    const timerId = setInterval(() => {
-      timeLeft--;
-      if (timeLeft > 0) {
-        timerEl.innerText = timeLeft;
+    // The ball starts on the right and rolls left, shrinking and leaving thread behind it.
+    function drawYarn(progress) {
+      const size = MAX_SIZE - (MAX_SIZE - MIN_SIZE) * progress;
+      const travel = trackEl.clientWidth - MAX_SIZE;
+      const left = (trackEl.clientWidth - size) - travel * progress;
+      yarnEl.style.width = yarnEl.style.height = size + 'px';
+      yarnEl.style.left = left + 'px';
+      threadEl.style.left = (left + size / 2) + 'px';
+      threadEl.style.marginTop = (size / 2 - 4) + 'px';
+      const rolled = travel * progress / (MAX_SIZE / 2);
+      yarnSvg.style.transform = 'rotate(' + (-rolled * 180 / Math.PI) + 'deg)';
+    }
+
+    function tick(now) {
+      const elapsed = Math.min((now - start) / 1000, DURATION);
+      drawYarn(elapsed / DURATION);
+      timerEl.innerText = Math.ceil(DURATION - elapsed);
+      if (elapsed < DURATION) {
+        frameId = requestAnimationFrame(tick);
       } else {
-        clearInterval(timerId);
-        timerEl.innerText = "0";
-        timerEl.style.background = "#172243";
         answersEl.style.pointerEvents = "none";
         answersEl.style.opacity = "0.5";
       }
-    }, 1000);
+    }
+    frameId = requestAnimationFrame(tick);
 
     function submitVote(choice, button) {
-      clearInterval(timerId);
+      cancelAnimationFrame(frameId);
       const confirmation = document.getElementById('confirmation');
       confirmation.style.background = getComputedStyle(button).backgroundColor;
       document.getElementById('chosen-icon').innerHTML = button.querySelector('svg').outerHTML;
