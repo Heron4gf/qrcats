@@ -90,6 +90,15 @@
       flex-shrink: 0;
       fill: #ffffff;
     }
+    .answer img {
+      width: 72px;
+      height: 72px;
+      margin-left: auto;
+      flex-shrink: 0;
+      border-radius: 8px;
+      border: 3px solid #ffffff;
+      object-fit: cover;
+    }
     .red { background: var(--red); }
     .blue { background: var(--blue); }
     .dark { background: var(--dark); }
@@ -142,14 +151,17 @@
     <button class="answer red" onclick="submitVote('A', this)">
       <svg viewBox="0 0 100 100"><path d="M50 5 L95 90 L5 90 Z"/></svg>
       Cat A
+      <img src="thumb1.jpg" alt="">
     </button>
     <button class="answer blue" onclick="submitVote('B', this)">
       <svg viewBox="0 0 100 100"><path d="M50 0 L100 50 L50 100 L0 50 Z"/></svg>
       Cat B
+      <img src="thumb2.jpg" alt="">
     </button>
     <button class="answer dark" onclick="submitVote('C', this)">
       <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48"/></svg>
       Cat C
+      <img src="thumb3.jpg" alt="">
     </button>
   </div>
 
