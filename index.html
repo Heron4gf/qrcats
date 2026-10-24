@@ -104,6 +104,7 @@
       gap: 20px;
       padding: 0 24px;
       font-size: 1.8rem;
+      white-space: nowrap;
       font-weight: 900;
       cursor: pointer;
       touch-action: manipulation;
@@ -192,7 +193,7 @@
           </g>
           <circle cx="50" cy="50" r="47" fill="none" stroke="#a3112a" stroke-width="3"/>
         </svg>
-        <span id="timer">60</span>
+        <span id="timer">30</span>
       </div>
     </div>
   </header>
@@ -222,7 +223,7 @@
   </div>
 
   <script>
-    const DURATION = 60;
+    const DURATION = 30;
     const MAX_SIZE = 72;
     const MIN_SIZE = 44;
     const timerEl = document.getElementById('timer');
