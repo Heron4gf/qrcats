@@ -3,235 +3,167 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Live Diagnostics Challenge</title>
+  <title>Spot the Sick Cat</title>
   <style>
     :root {
-      --bg: #f0f0f0;
-      --card-bg: #ffffff;
-      --accent: #5e73c5;
-      --navy: #1b1e36;
-      --border: #1b1e36;
-      --text: #1b1e36;
-      --muted: #5e73c5;
+      --bg: #eeeeee;
+      --navy: #172243;
+      --accent: #4b71c0;
+      --red: #e21b3c;
+      --blue: #1368ce;
+      --yellow: #d89e00;
     }
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    html, body {
+      height: 100%;
     }
     body {
       background-color: var(--bg);
-      color: var(--text);
-      display: flex;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 16px;
-    }
-    .container {
-      width: 100%;
-      max-width: 1200px;
+      color: var(--navy);
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 16px;
+      gap: 16px;
     }
     header {
-      text-align: center;
-      padding: 10px 0;
-    }
-    .badge {
-      display: inline-block;
-      background: var(--navy);
-      color: #ffffff;
-      border: 2px solid var(--navy);
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 0.85rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
     }
     h1 {
-      font-size: 2rem;
+      font-size: 1.6rem;
       font-weight: 900;
       line-height: 1.1;
-      text-transform: uppercase;
-      color: var(--navy);
-    }
-    p.subtitle {
-      color: var(--muted);
-      font-size: 1rem;
-      font-weight: 700;
-      margin-top: 8px;
-      text-transform: uppercase;
     }
     #timer {
-      font-family: "Extenda 100 Yotta", sans-serif;
-      font-size: 6rem;
+      flex-shrink: 0;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
       font-weight: 900;
-      color: var(--accent);
-      margin-top: 16px;
-      line-height: 1;
     }
-    .cards-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
-      transition: opacity 0.3s ease;
-    }
-    @media (min-width: 768px) {
-      .cards-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-      h1 {
-        font-size: 2.5rem;
-      }
-    }
-    .card {
-      background: var(--card-bg);
-      border: 4px solid var(--border);
-      overflow: hidden;
-      cursor: pointer;
+    #answers {
+      flex: 1;
       display: flex;
       flex-direction: column;
+      gap: 12px;
+      transition: opacity 0.3s ease;
+    }
+    .answer {
+      flex: 1;
+      min-height: 90px;
+      border: none;
+      border-radius: 8px;
+      color: #ffffff;
+      display: flex;
       align-items: center;
-      padding: 16px;
-      transition: transform 0.15s ease, background-color 0.15s ease;
-      touch-action: manipulation;
-      box-shadow: 6px 6px 0px var(--border);
-    }
-    .card:active {
-      transform: translate(4px, 4px);
-      box-shadow: 2px 2px 0px var(--border);
-      background-color: var(--bg);
-    }
-    .card-info {
-      width: 100%;
-      text-align: center;
-      margin-bottom: 12px;
-    }
-    .card-info h3 {
-      font-size: 1.5rem;
+      gap: 20px;
+      padding: 0 24px;
+      font-size: 1.8rem;
       font-weight: 900;
-      text-transform: uppercase;
-      color: var(--accent);
+      cursor: pointer;
+      touch-action: manipulation;
+      box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.25);
+      transition: transform 0.1s ease;
     }
-    .card img {
-      width: 100%;
-      height: auto;
-      aspect-ratio: 1 / 1;
-      border: 4px solid var(--border);
-      object-fit: cover;
+    .answer:active {
+      transform: scale(0.97);
+    }
+    .answer svg {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      fill: #ffffff;
+    }
+    .red { background: var(--red); }
+    .blue { background: var(--blue); }
+    .yellow { background: var(--yellow); }
+    @media (min-width: 768px) {
+      h1 { font-size: 2.4rem; }
+      #answers { flex-direction: row; }
+      .answer { justify-content: center; }
     }
     #confirmation {
       display: none;
+      flex: 1;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 40px 16px;
       gap: 20px;
+      color: #ffffff;
+      margin: -16px;
+      padding: 32px 16px;
       animation: fadeIn 0.4s ease;
     }
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(12px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    .check-icon {
-      width: 80px;
-      height: 80px;
-      background: var(--accent);
-      border: 4px solid var(--navy);
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 36px;
-      font-weight: 900;
-      box-shadow: 4px 4px 0px var(--navy);
+    #confirmation svg {
+      width: 96px;
+      height: 96px;
+      fill: #ffffff;
     }
     #confirmation h2 {
-      font-size: 1.8rem;
+      font-size: 2rem;
       font-weight: 900;
-      text-transform: uppercase;
-      color: var(--navy);
     }
     #confirmation p {
-      color: var(--muted);
-      font-size: 1rem;
+      font-size: 1.1rem;
       font-weight: 700;
       line-height: 1.5;
-    }
-    .screen-prompt {
-      margin-top: 12px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #ffffff;
-      border: 4px solid var(--navy);
-      padding: 12px 16px;
-      color: var(--accent);
-      font-size: 0.9rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      box-shadow: 4px 4px 0px var(--navy);
+      opacity: 0.9;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header id="page-header">
-      <div class="badge">Audience Challenge</div>
-      <h1>Spot the Sick Cat</h1>
-      <p class="subtitle">One of these cats is actively sick. Tap to cast your vote.</p>
-      <div id="timer">60</div>
-    </header>
+  <header id="page-header">
+    <h1>Which cat is sick?</h1>
+    <div id="timer">60</div>
+  </header>
 
-    <div id="selection-view" class="cards-grid">
-      <div class="card" onclick="submitVote('A')">
-        <div class="card-info">
-          <h3>Cat A</h3>
-        </div>
-        <img src="1.jpg" alt="Cat A">
-      </div>
+  <div id="answers">
+    <button class="answer red" onclick="submitVote('A', this)">
+      <svg viewBox="0 0 100 100"><path d="M50 5 L95 90 L5 90 Z"/></svg>
+      Cat A
+    </button>
+    <button class="answer blue" onclick="submitVote('B', this)">
+      <svg viewBox="0 0 100 100"><path d="M50 0 L100 50 L50 100 L0 50 Z"/></svg>
+      Cat B
+    </button>
+    <button class="answer yellow" onclick="submitVote('C', this)">
+      <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48"/></svg>
+      Cat C
+    </button>
+  </div>
 
-      <div class="card" onclick="submitVote('B')">
-        <div class="card-info">
-          <h3>Cat B</h3>
-        </div>
-        <img src="2.jpg" alt="Cat B">
-      </div>
-
-      <div class="card" onclick="submitVote('C')">
-        <div class="card-info">
-          <h3>Cat C</h3>
-        </div>
-        <img src="3.jpg" alt="Cat C">
-      </div>
-    </div>
-
-    <div id="confirmation">
-      <div class="check-icon">✓</div>
-      <h2>Vote Registered!</h2>
-      <p>Your answer has been recorded alongside the rest of the audience.</p>
-      <div class="screen-prompt">
-        👀 Look at the main screen for the live reveal
-      </div>
-    </div>
+  <div id="confirmation">
+    <div id="chosen-icon"></div>
+    <h2>Answer locked in!</h2>
+    <p>Look at the main screen for the reveal 👀</p>
   </div>
 
   <script>
     let timeLeft = 60;
     const timerEl = document.getElementById('timer');
-    const selectionView = document.getElementById('selection-view');
-    
+    const answersEl = document.getElementById('answers');
+
     const timerId = setInterval(() => {
       timeLeft--;
       if (timeLeft > 0) {
@@ -239,17 +171,20 @@
       } else {
         clearInterval(timerId);
         timerEl.innerText = "0";
-        timerEl.style.color = "#1b1e36";
-        selectionView.style.pointerEvents = "none";
-        selectionView.style.opacity = "0.5";
+        timerEl.style.background = "#172243";
+        answersEl.style.pointerEvents = "none";
+        answersEl.style.opacity = "0.5";
       }
     }, 1000);
 
-    function submitVote(choice) {
-      selectionView.style.display = 'none';
-      document.getElementById('page-header').style.display = 'none';
-      document.getElementById('confirmation').style.display = 'flex';
+    function submitVote(choice, button) {
       clearInterval(timerId);
+      const confirmation = document.getElementById('confirmation');
+      confirmation.style.background = getComputedStyle(button).backgroundColor;
+      document.getElementById('chosen-icon').innerHTML = button.querySelector('svg').outerHTML;
+      answersEl.style.display = 'none';
+      document.getElementById('page-header').style.display = 'none';
+      confirmation.style.display = 'flex';
     }
   </script>
 </body>
